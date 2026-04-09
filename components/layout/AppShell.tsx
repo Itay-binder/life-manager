@@ -180,7 +180,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="mt-2">
         <div
-          className="rounded-lg px-2 py-1 text-sm font-semibold text-zinc-700"
+          className="rounded-lg px-2 py-1 text-sm font-semibold text-slate-700"
           style={{ paddingInlineStart: `${8 + node.depth * 12}px` }}
         >
           {node.name}
@@ -198,10 +198,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Link
                 href={`/boards/${board.id}`}
-                className={`flex-1 rounded-md px-2 py-1 text-sm ${
+                className={`flex-1 rounded-lg px-2.5 py-1.5 text-sm transition ${
                   pathname === `/boards/${board.id}`
-                    ? "bg-zinc-900 text-white"
-                    : "text-zinc-700 hover:bg-zinc-100"
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "text-slate-700 hover:bg-slate-100"
                 }`}
               >
                 {board.title}
@@ -209,7 +209,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={() => setMenuBoardId(board.id)}
-                className="rounded px-1 py-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+                className="rounded-lg px-1.5 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
               >
                 ⋯
               </button>
@@ -219,7 +219,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onClick={() => handleCreateBoard(node.id).catch(console.error)}
-          className="mt-1 rounded px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100"
+          className="mt-1 rounded-lg px-2 py-1 text-xs text-slate-500 hover:bg-slate-100"
           style={{ marginInlineStart: `${20 + node.depth * 12}px` }}
         >
           + Board חדש
@@ -232,12 +232,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 bg-zinc-50">
+    <div className="flex min-h-0 flex-1 bg-transparent">
       {!sidebarCollapsed ? (
         <button
           type="button"
           onClick={() => setSidebarCollapsed(true)}
-          className="fixed right-2 top-2 z-20 rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 shadow-sm hover:bg-zinc-50"
+          className="fixed right-3 top-3 z-20 rounded-xl border border-blue-100 bg-white/90 px-3 py-1.5 text-xs font-medium text-slate-700 shadow-lg backdrop-blur hover:bg-white"
           title="מזער תפריט"
         >
           הסתר תפריט
@@ -246,76 +246,78 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onClick={() => setSidebarCollapsed(false)}
-          className="fixed right-2 top-2 z-20 rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 shadow-sm hover:bg-zinc-50"
+          className="fixed right-3 top-3 z-20 rounded-xl border border-blue-100 bg-white/90 px-3 py-1.5 text-xs font-medium text-slate-700 shadow-lg backdrop-blur hover:bg-white"
           title="פתח תפריט"
         >
           פתח תפריט
         </button>
       )}
       <aside
-        className={`sticky top-0 h-screen border-l border-zinc-200 bg-white p-3 transition-[width,padding] duration-200 ${
+        className={`sticky top-0 h-screen border-l border-blue-100 bg-white/95 p-3 shadow-2xl shadow-blue-950/5 backdrop-blur transition-[width,padding] duration-200 ${
           sidebarCollapsed ? "w-0 overflow-hidden p-0" : ""
         }`}
         style={sidebarCollapsed ? undefined : { width: `${sidebarWidth}px` }}
       >
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-sm font-semibold text-zinc-900">Life Manager</p>
+          <p className="bg-gradient-to-l from-blue-600 to-violet-600 bg-clip-text text-sm font-extrabold tracking-tight text-transparent">
+            Life Manager
+          </p>
           <button
             type="button"
             onClick={() => {
               setEditingName(user?.displayName ?? "");
               setShowProfile((x) => !x);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-xs font-semibold text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-violet-600 text-xs font-semibold text-white shadow-md"
             title="פרופיל"
           >
             {(user?.displayName?.[0] ?? user?.email?.[0] ?? "U").toUpperCase()}
           </button>
         </div>
         {showProfile ? (
-          <div className="mb-3 space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-2">
-            <p className="text-xs text-zinc-500">{user?.email}</p>
+          <div className="mb-3 space-y-2 rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50/80 to-violet-50/70 p-3 shadow-sm">
+            <p className="text-xs text-slate-500">{user?.email}</p>
             <input
               value={editingName}
               onChange={(e) => setEditingName(e.target.value)}
-              className="w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm outline-none"
+              className="w-full rounded-xl border border-blue-100 bg-white px-2.5 py-1.5 text-sm outline-none ring-blue-200 focus:ring-2"
               placeholder="שם תצוגה"
             />
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => handleProfileSave().catch(console.error)}
-                className="rounded bg-zinc-900 px-2 py-1 text-xs text-white"
+                className="rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-2.5 py-1 text-xs text-white shadow-sm"
               >
                 שמירה
               </button>
               <button
                 type="button"
                 onClick={() => handleSignOut().catch(console.error)}
-                className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700"
+                className="rounded-lg border border-blue-100 bg-white px-2.5 py-1 text-xs text-slate-700"
               >
                 התנתקות
               </button>
             </div>
           </div>
         ) : null}
-        <nav className="mb-3 space-y-1">
+        <nav className="mb-3 space-y-1.5">
           {nav.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`block rounded-lg px-2 py-1.5 text-sm ${
+              className={`block rounded-xl px-3 py-2 text-sm font-medium transition ${
                 pathname === href
-                  ? "bg-zinc-900 text-white"
-                  : "text-zinc-700 hover:bg-zinc-100"
+                  ? "bg-gradient-to-l from-blue-600 to-violet-600 text-white shadow-md"
+                  : "text-slate-700 hover:bg-slate-100/80"
               }`}
             >
               {label}
             </Link>
           ))}
         </nav>
-        <div className="h-[calc(100vh-220px)] overflow-y-auto rounded-xl border border-zinc-200 p-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+        <div className="h-[calc(100vh-220px)] overflow-y-auto rounded-2xl border border-blue-100 bg-white p-2.5 shadow-inner">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Workspaces
           </p>
           {tree.map((node) => (
@@ -327,7 +329,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onMouseDown={() => setIsResizing(true)}
-          className="relative z-10 h-screen w-1 cursor-col-resize bg-transparent hover:bg-zinc-300"
+          className="relative z-10 h-screen w-1 cursor-col-resize bg-transparent hover:bg-blue-300/60"
           title="גרור לשינוי רוחב"
         />
       ) : null}
@@ -335,17 +337,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {menuBoardId ? (
         <div
-          className="fixed inset-0 z-30 bg-black/20"
+          className="fixed inset-0 z-30 bg-slate-950/20 backdrop-blur-[1px]"
           onClick={() => setMenuBoardId(null)}
         >
           <div
-            className="absolute left-4 top-24 w-64 rounded-xl border border-zinc-200 bg-white p-2 shadow-xl"
+            className="absolute left-4 top-24 w-64 rounded-2xl border border-blue-100 bg-white p-2.5 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="mb-2 px-2 text-xs text-zinc-400">הגדרות Board</p>
+            <p className="mb-2 px-2 text-xs text-slate-400">הגדרות Board</p>
             <button
               type="button"
-              className="mb-1 w-full rounded px-2 py-1 text-right text-sm hover:bg-zinc-100"
+              className="mb-1 w-full rounded-xl px-2 py-1.5 text-right text-sm hover:bg-slate-100"
               onClick={async () => {
                 const current = boards.find((x) => x.id === menuBoardId);
                 const title = window.prompt("שם חדש ללוח", current?.title ?? "");
@@ -359,7 +361,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 key={p}
                 type="button"
-                className="mb-1 w-full rounded px-2 py-1 text-right text-sm hover:bg-zinc-100"
+                className="mb-1 w-full rounded-xl px-2 py-1.5 text-right text-sm hover:bg-slate-100"
                 onClick={() => {
                   setBoardPrivacy(menuBoardId, p).catch(console.error);
                   setMenuBoardId(null);
@@ -370,7 +372,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             ))}
             <button
               type="button"
-              className="w-full rounded px-2 py-1 text-right text-sm text-red-600 hover:bg-red-50"
+              className="w-full rounded-xl px-2 py-1.5 text-right text-sm text-red-600 hover:bg-red-50"
               onClick={() => {
                 deleteBoard(menuBoardId).catch(console.error);
                 setMenuBoardId(null);

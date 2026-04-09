@@ -65,28 +65,30 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <header>
-        <h1 className="text-2xl font-semibold text-zinc-900">דשבורד</h1>
-        <p className="mt-1 text-sm text-zinc-600">
+        <h1 className="bg-gradient-to-l from-blue-600 to-violet-600 bg-clip-text text-3xl font-extrabold text-transparent">
+          דשבורד
+        </h1>
+        <p className="mt-1 text-sm text-slate-600">
           סיכום מהיר לפני שמתחילים את היום.
         </p>
       </header>
 
       <section className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium text-zinc-500">Workspaces</p>
-          <p className="mt-2 text-3xl font-semibold tabular-nums text-zinc-900">
+        <div className="rounded-3xl border border-blue-100 bg-white/95 p-5 shadow-xl shadow-blue-950/5">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Workspaces</p>
+          <p className="mt-2 text-3xl font-extrabold tabular-nums text-slate-900">
             {workspaces.length}
           </p>
         </div>
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium text-zinc-500">Boards</p>
-          <p className="mt-2 text-3xl font-semibold tabular-nums text-zinc-900">
+        <div className="rounded-3xl border border-blue-100 bg-white/95 p-5 shadow-xl shadow-blue-950/5">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Boards</p>
+          <p className="mt-2 text-3xl font-extrabold tabular-nums text-slate-900">
             {boards.length}
           </p>
         </div>
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium text-zinc-500">Items</p>
-          <p className="mt-2 text-3xl font-semibold tabular-nums text-zinc-900">
+        <div className="rounded-3xl border border-blue-100 bg-white/95 p-5 shadow-xl shadow-blue-950/5">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Items</p>
+          <p className="mt-2 text-3xl font-extrabold tabular-nums text-slate-900">
             {items.length}
           </p>
         </div>
@@ -95,13 +97,13 @@ export default function DashboardPage() {
       <section className="flex flex-wrap gap-2">
         <Link
           href="/boards"
-          className="rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800"
+          className="rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
         >
           מעבר ל־Boards
         </Link>
         <Link
           href="/workspaces"
-          className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
+          className="rounded-xl border border-blue-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
         >
           ניהול Workspaces
         </Link>

@@ -115,10 +115,10 @@ export default function BoardPage() {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-900">
+          <h1 className="bg-gradient-to-l from-blue-600 to-violet-600 bg-clip-text text-3xl font-extrabold text-transparent">
             {board?.title ?? "Board"}
           </h1>
-          <p className="text-sm text-zinc-600">
+          <p className="text-sm text-slate-600">
             Groups + Items + Columns (אותן עמודות לכל קבוצה בלוח).
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function BoardPage() {
                 title,
               }).catch(console.error);
             }}
-            className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+            className="rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
           >
             New Item
           </button>
@@ -154,19 +154,19 @@ export default function BoardPage() {
                   groups.reduce((m, x) => Math.max(m, x.sortOrder), -1) + 1,
               }).catch(console.error);
             }}
-            className="ms-2 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm"
+            className="ms-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
           >
             ▾ קבוצה
           </button>
         </div>
       </header>
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-4">
+      <section className="rounded-3xl border border-blue-100 bg-white/95 p-4 shadow-xl shadow-blue-950/5">
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-sm font-semibold text-zinc-700">עמודות Board</p>
+          <p className="text-sm font-semibold text-slate-700">עמודות Board</p>
           <button
             type="button"
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm"
+            className="rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
             onClick={() => {
               if (!user) return;
               const title = window.prompt("שם עמודה");
@@ -189,7 +189,7 @@ export default function BoardPage() {
           {columns.map((col) => (
             <span
               key={col.id}
-              className="rounded-lg bg-zinc-100 px-2 py-1 text-xs text-zinc-700"
+              className="rounded-xl bg-slate-100 px-2 py-1 text-xs text-slate-700"
             >
               {col.title}
             </span>
@@ -198,20 +198,20 @@ export default function BoardPage() {
       </section>
 
       {groups.map((group) => (
-        <section key={group.id} className="rounded-2xl border border-zinc-200 bg-white">
-          <div className="border-b border-zinc-200 px-4 py-3">
-            <h2 className="text-sm font-semibold text-zinc-900">{group.title}</h2>
+        <section key={group.id} className="rounded-3xl border border-blue-100 bg-white/95 shadow-xl shadow-blue-950/5">
+          <div className="border-b border-slate-200 px-4 py-3">
+            <h2 className="text-sm font-semibold text-slate-900">{group.title}</h2>
           </div>
-          <ul className="divide-y divide-zinc-100">
+          <ul className="divide-y divide-slate-100">
             {(itemsByGroup.get(group.id) ?? []).map((item) => (
-              <li key={item.id} className="px-4 py-3 text-sm text-zinc-800">
+              <li key={item.id} className="px-4 py-3 text-sm text-slate-800">
                 {item.title}
               </li>
             ))}
             <li className="px-4 py-3">
               <button
                 type="button"
-                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs text-zinc-700"
+                className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
                 onClick={() => {
                   if (!user) return;
                   const title = window.prompt("שם משימה");

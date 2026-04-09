@@ -62,29 +62,31 @@ export default function BoardsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-zinc-900">Boards</h1>
-        <p className="text-sm text-zinc-600">
+        <h1 className="bg-gradient-to-l from-blue-600 to-violet-600 bg-clip-text text-3xl font-extrabold text-transparent">
+          Boards
+        </h1>
+        <p className="text-sm text-slate-600">
           רשימת כל ה־Boards מכל התחומים.
         </p>
       </header>
 
-      <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+      <div className="rounded-3xl border border-blue-100 bg-white/95 p-4 shadow-xl shadow-blue-950/5">
         <ul className="space-y-2">
           {boards.map((board) => (
             <li
               key={board.id}
-              className="flex items-center justify-between rounded-xl border border-zinc-200 px-3 py-2"
+              className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-blue-300 hover:bg-blue-50/40"
             >
               <div>
-                <p className="font-medium text-zinc-900">{board.title}</p>
-                <p className="text-xs text-zinc-500">
+                <p className="font-semibold text-slate-900">{board.title}</p>
+                <p className="text-xs text-slate-500">
                   {workspaceMap.get(board.workspaceId) ?? "ללא תחום"} ·{" "}
                   {board.privacy}
                 </p>
               </div>
               <Link
                 href={`/boards/${board.id}`}
-                className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm text-white"
+                className="rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
               >
                 פתח Board
               </Link>

@@ -2,8 +2,13 @@
 
 :root {
   color-scheme: light;
-  --background: #fafafa;
-  --foreground: #18181b;
+  --background: #f4f7ff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #2563eb;
+  --primary-2: #7c3aed;
 }
 
 @theme inline {
@@ -15,4 +20,25 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  background-image:
+    radial-gradient(ellipse at top right, rgba(37, 99, 235, 0.16), transparent 42%),
+    radial-gradient(ellipse at bottom left, rgba(124, 58, 237, 0.13), transparent 36%);
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.45), rgba(124, 58, 237, 0.45));
+  border-radius: 10px;
 }

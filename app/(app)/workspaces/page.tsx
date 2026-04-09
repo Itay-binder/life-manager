@@ -94,26 +94,28 @@ export default function WorkspacesPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-zinc-900">Workspaces</h1>
-        <p className="text-sm text-zinc-600">
+        <h1 className="bg-gradient-to-l from-blue-600 to-violet-600 bg-clip-text text-3xl font-extrabold text-transparent">
+          Workspaces
+        </h1>
+        <p className="text-sm text-slate-600">
           כל תחום הוא Workspace. ניתן ליצור תת-תחום ו־Board תחת כל תחום.
         </p>
       </header>
 
       <form
         onSubmit={handleAddWorkspace}
-        className="grid gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:grid-cols-4"
+        className="grid gap-3 rounded-3xl border border-blue-100 bg-white/95 p-4 shadow-xl shadow-blue-950/5 sm:grid-cols-4"
       >
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="שם תחום / תת תחום"
-          className="rounded-xl border border-zinc-200 px-3 py-2 text-sm outline-none sm:col-span-2"
+          className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-blue-200 focus:ring-2 sm:col-span-2"
         />
         <select
           value={parentId}
           onChange={(e) => setParentId(e.target.value)}
-          className="rounded-xl border border-zinc-200 px-3 py-2 text-sm outline-none"
+          className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-blue-200 focus:ring-2"
         >
           <option value="root">ללא הורה (ראשי)</option>
           {workspaces.map((w) => (
@@ -124,7 +126,7 @@ export default function WorkspacesPage() {
         </select>
         <button
           type="submit"
-          className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
+          className="rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
         >
           הוסף Workspace
         </button>
@@ -132,11 +134,11 @@ export default function WorkspacesPage() {
 
       <div className="space-y-3">
         {workspaces.map((ws) => (
-          <div key={ws.id} className="rounded-2xl border border-zinc-200 bg-white p-4">
+          <div key={ws.id} className="rounded-3xl border border-blue-100 bg-white/95 p-4 shadow-lg shadow-blue-950/5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-zinc-900">{ws.name}</p>
-                <p className="text-xs text-zinc-500">
+                <p className="font-semibold text-slate-900">{ws.name}</p>
+                <p className="text-xs text-slate-500">
                   {ws.parentId ? "תת-תחום" : "תחום ראשי"}
                 </p>
               </div>
@@ -158,14 +160,14 @@ export default function WorkspacesPage() {
                     sortOrder: nextSort,
                   }).catch(console.error);
                 }}
-                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
                 + Board
               </button>
             </div>
             <ul className="mt-3 space-y-1">
               {(groupedBoards.get(ws.id) ?? []).map((board) => (
-                <li key={board.id} className="rounded-lg bg-zinc-50 px-3 py-2 text-sm">
+                <li key={board.id} className="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700">
                   {board.title}
                 </li>
               ))}
