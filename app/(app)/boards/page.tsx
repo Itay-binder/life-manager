@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getDb } from "@/lib/firebase/client";
 
@@ -26,12 +26,10 @@ export default function BoardsPage() {
     const wq = query(
       collection(db, "workspaces"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
     const bq = query(
       collection(db, "boards"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
     const unsubW = onSnapshot(wq, (snap) => {
       setWorkspaces(

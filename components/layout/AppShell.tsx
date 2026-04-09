@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
   collection,
   onSnapshot,
-  orderBy,
   query,
   updateDoc,
   where,
@@ -100,35 +99,45 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const uq = query(
       collection(db, "workspaces"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
     const bq = query(
       collection(db, "boards"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
-    const unsubWorkspaces = onSnapshot(uq, (snap) => {
-      setWorkspaces(
-        snap.docs.map((d) => ({
-          id: d.id,
-          name: d.data().name as string,
-          parentId: d.data().parentId as string | null | undefined,
-          color: d.data().color as string | undefined,
-          sortOrder: d.data().sortOrder as number,
-        })),
-      );
-    });
-    const unsubBoards = onSnapshot(bq, (snap) => {
-      setBoards(
-        snap.docs.map((d) => ({
-          id: d.id,
-          workspaceId: d.data().workspaceId as string,
-          title: d.data().title as string,
-          privacy: d.data().privacy as BoardPrivacy,
-          sortOrder: d.data().sortOrder as number,
-        })),
-      );
-    });
+    const unsubWorkspaces = onSnapshot(
+      uq,
+      (snap) => {
+        setWorkspaces(
+          snap.docs.map((d) => ({
+            id: d.id,
+            name: d.data().name as string,
+            parentId: d.data().parentId as string | null | undefined,
+            color: d.data().color as string | undefined,
+            sortOrder: d.data().sortOrder as number,
+          })),
+        );
+      },
+      (error) => {
+        console.error("workspaces snapshot error", error);
+      },
+    );
+    const unsubBoards = onSnapshot(
+      bq,
+      (snap) => {
+        setBoards(
+          snap.docs.map((d) => ({
+            id: d.id,
+            workspaceId: d.data().workspaceId as string,
+            title: d.data().title as string,
+            privacy: d.data().privacy as BoardPrivacy,
+            sortOrder: d.data().sortOrder as number,
+          })),
+        );
+      },
+      (error) => {
+        console.error("boards snapshot error", error);
+      },
+    );
     return () => {
       unsubWorkspaces();
       unsubBoards();
@@ -190,7 +199,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       boards
         .filter((b) => b.workspaceId === workspaceId)
         .reduce((m, x) => Math.max(m, x.sortOrder), -1) + 1;
-    await createBoard({ userId: user.uid, workspaceId, title, sortOrder });
+    try {
+      await createBoard({ userId: user.uid, workspaceId, title, sortOrder });
+    } catch (error) {
+      console.error(error);
+      window.alert("שגיאה ביצירת Board. בדוק Rules/Indexes בפיירסטור.");
+    }
   }
 
   async function handleWorkspaceMenuAction(action: "rename" | "color" | "move" | "newBoard" | "delete", workspaceId: string) {
@@ -280,7 +294,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="mt-2">
         <div
-          className="group flex items-center justify-between rounded-lg px-2 py-1 text-sm font-semibold text-slate-700"
+          className="group flex items-center justify-between rounded-lg px-2 py-1 text-sm font-semibold text-slate-100"
           style={{ paddingInlineStart: `${8 + node.depth * 12}px` }}
           onContextMenu={(e) => {
             e.preventDefault();
@@ -316,8 +330,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 href={`/boards/${board.id}`}
                 className={`flex-1 rounded-lg px-2.5 py-1.5 text-sm transition ${
                   pathname === `/boards/${board.id}`
-                    ? "bg-slate-900 text-white shadow-sm"
-                    : "text-slate-700 hover:bg-slate-100"
+                    ? "bg-cyan-500/20 text-cyan-100 shadow-sm"
+                    : "text-slate-200 hover:bg-white/10"
                 }`}
               >
                 <span className="inline-flex items-center gap-1.5">
@@ -328,7 +342,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={() => setMenuBoardId(board.id)}
-                className="rounded-lg px-1.5 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                className="rounded-lg px-1.5 py-1 text-slate-400 hover:bg-white/10 hover:text-slate-100"
               >
                 ⋯
               </button>
@@ -338,7 +352,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onClick={() => handleCreateBoard(node.id).catch(console.error)}
-          className="mt-1 rounded-lg px-2 py-1 text-xs text-slate-500 hover:bg-slate-100"
+          className="mt-1 rounded-lg px-2 py-1 text-xs text-slate-300 hover:bg-white/10"
           style={{ marginInlineStart: `${20 + node.depth * 12}px` }}
         >
           + Board חדש
@@ -380,13 +394,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </button>
       )}
       <aside
-        className={`sticky top-0 h-screen border-l border-blue-100 bg-white/95 p-3 shadow-2xl shadow-blue-950/5 backdrop-blur transition-[width,padding] duration-200 ${
+        className={`sticky top-0 h-screen border-l border-slate-800 bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950 p-3 text-slate-100 shadow-2xl shadow-indigo-950/40 backdrop-blur transition-[width,padding] duration-200 ${
           sidebarCollapsed ? "w-0 overflow-hidden p-0" : ""
         }`}
         style={sidebarCollapsed ? undefined : { width: `${sidebarWidth}px` }}
       >
         <div className="mb-3 flex items-center justify-between">
-          <p className="bg-gradient-to-l from-blue-600 to-violet-600 bg-clip-text text-sm font-extrabold tracking-tight text-transparent">
+          <p className="bg-gradient-to-l from-cyan-300 to-violet-300 bg-clip-text text-sm font-extrabold tracking-tight text-transparent">
             Life Manager
           </p>
           <button
@@ -395,33 +409,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               setEditingName(user?.displayName ?? "");
               setShowProfile((x) => !x);
             }}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-violet-600 text-xs font-semibold text-white shadow-md"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-xs font-semibold text-white shadow-md"
             title="פרופיל"
           >
             {(user?.displayName?.[0] ?? user?.email?.[0] ?? "U").toUpperCase()}
           </button>
         </div>
         {showProfile ? (
-          <div className="mb-3 space-y-2 rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50/80 to-violet-50/70 p-3 shadow-sm">
-            <p className="text-xs text-slate-500">{user?.email}</p>
+          <div className="mb-3 space-y-2 rounded-2xl border border-slate-700 bg-slate-900/70 p-3 shadow-sm">
+            <p className="text-xs text-slate-300">{user?.email}</p>
             <input
               value={editingName}
               onChange={(e) => setEditingName(e.target.value)}
-              className="w-full rounded-xl border border-blue-100 bg-white px-2.5 py-1.5 text-sm outline-none ring-blue-200 focus:ring-2"
+              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-sm text-slate-100 outline-none ring-cyan-300 focus:ring-2"
               placeholder="שם תצוגה"
             />
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => handleProfileSave().catch(console.error)}
-                className="rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-2.5 py-1 text-xs text-white shadow-sm"
+                className="rounded-lg bg-gradient-to-r from-cyan-500 to-violet-500 px-2.5 py-1 text-xs text-white shadow-sm"
               >
                 שמירה
               </button>
               <button
                 type="button"
                 onClick={() => handleSignOut().catch(console.error)}
-                className="rounded-lg border border-blue-100 bg-white px-2.5 py-1 text-xs text-slate-700"
+                className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-slate-200"
               >
                 התנתקות
               </button>
@@ -435,15 +449,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={href}
               className={`block rounded-xl px-3 py-2 text-sm font-medium transition ${
                 pathname === href
-                  ? "bg-gradient-to-l from-blue-600 to-violet-600 text-white shadow-md"
-                  : "text-slate-700 hover:bg-slate-100/80"
+                  ? "bg-gradient-to-l from-cyan-500 to-violet-500 text-white shadow-md"
+                  : "text-slate-200 hover:bg-white/10"
               }`}
             >
               {label}
             </Link>
           ))}
         </nav>
-        <div className="h-[calc(100vh-220px)] overflow-y-auto rounded-2xl border border-blue-100 bg-white p-2.5 shadow-inner">
+        <div className="h-[calc(100vh-220px)] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900/50 p-2.5 shadow-inner">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Workspaces
           </p>

@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import {
   collection,
   onSnapshot,
-  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -43,19 +42,16 @@ export default function BoardPage() {
       collection(db, "boardGroups"),
       where("userId", "==", user.uid),
       where("boardId", "==", boardId),
-      orderBy("sortOrder", "asc"),
     );
     const cq = query(
       collection(db, "boardColumns"),
       where("userId", "==", user.uid),
       where("boardId", "==", boardId),
-      orderBy("sortOrder", "asc"),
     );
     const iq = query(
       collection(db, "boardItems"),
       where("userId", "==", user.uid),
       where("boardId", "==", boardId),
-      orderBy("createdAt", "asc"),
     );
 
     const ub = onSnapshot(bq, (snap) => {
@@ -63,23 +59,21 @@ export default function BoardPage() {
       setBoard(row ? { id: row.id, title: row.data().title as string } : null);
     });
     const ug = onSnapshot(gq, (snap) => {
-      setGroups(
-        snap.docs.map((d) => ({
-          id: d.id,
-          title: d.data().title as string,
-          sortOrder: d.data().sortOrder as number,
-        })),
-      );
+      const rows = snap.docs.map((d) => ({
+        id: d.id,
+        title: d.data().title as string,
+        sortOrder: d.data().sortOrder as number,
+      }));
+      setGroups(rows.sort((a, b) => a.sortOrder - b.sortOrder));
     });
     const uc = onSnapshot(cq, (snap) => {
-      setColumns(
-        snap.docs.map((d) => ({
-          id: d.id,
-          title: d.data().title as string,
-          key: d.data().key as string,
-          sortOrder: d.data().sortOrder as number,
-        })),
-      );
+      const rows = snap.docs.map((d) => ({
+        id: d.id,
+        title: d.data().title as string,
+        key: d.data().key as string,
+        sortOrder: d.data().sortOrder as number,
+      }));
+      setColumns(rows.sort((a, b) => a.sortOrder - b.sortOrder));
     });
     const ui = onSnapshot(iq, (snap) => {
       setItems(

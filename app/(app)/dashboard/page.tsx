@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   collection,
   onSnapshot,
-  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -28,17 +27,14 @@ export default function DashboardPage() {
     const wq = query(
       collection(db, "workspaces"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
     const bq = query(
       collection(db, "boards"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
     const iq = query(
       collection(db, "boardItems"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc"),
     );
     const unsubW = onSnapshot(wq, (snap) => {
       setWorkspaces(

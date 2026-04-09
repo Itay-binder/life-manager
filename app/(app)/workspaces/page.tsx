@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   collection,
   onSnapshot,
-  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -34,32 +33,28 @@ export default function WorkspacesPage() {
     const wq = query(
       collection(db, "workspaces"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
     const bq = query(
       collection(db, "boards"),
       where("userId", "==", user.uid),
-      orderBy("sortOrder", "asc"),
     );
     const unsubW = onSnapshot(wq, (snap) => {
-      setWorkspaces(
-        snap.docs.map((d) => ({
-          id: d.id,
-          name: d.data().name as string,
-          parentId: d.data().parentId as string | null | undefined,
-          sortOrder: d.data().sortOrder as number,
-        })),
-      );
+      const rows = snap.docs.map((d) => ({
+        id: d.id,
+        name: d.data().name as string,
+        parentId: d.data().parentId as string | null | undefined,
+        sortOrder: d.data().sortOrder as number,
+      }));
+      setWorkspaces(rows.sort((a, b) => a.sortOrder - b.sortOrder));
     });
     const unsubB = onSnapshot(bq, (snap) => {
-      setBoards(
-        snap.docs.map((d) => ({
-          id: d.id,
-          workspaceId: d.data().workspaceId as string,
-          title: d.data().title as string,
-          sortOrder: d.data().sortOrder as number,
-        })),
-      );
+      const rows = snap.docs.map((d) => ({
+        id: d.id,
+        workspaceId: d.data().workspaceId as string,
+        title: d.data().title as string,
+        sortOrder: d.data().sortOrder as number,
+      }));
+      setBoards(rows.sort((a, b) => a.sortOrder - b.sortOrder));
     });
     return () => {
       unsubW();
@@ -82,13 +77,19 @@ export default function WorkspacesPage() {
     if (!user || !name.trim()) return;
     const sortOrder =
       workspaces.reduce((m, x) => Math.max(m, x.sortOrder), -1) + 1;
-    await createWorkspace({
-      userId: user.uid,
-      name,
-      parentId: parentId === "root" ? null : parentId,
-      sortOrder,
-    });
-    setName("");
+    try {
+      await createWorkspace({
+        userId: user.uid,
+        name,
+        parentId: parentId === "root" ? null : parentId,
+        sortOrder,
+      });
+      setName("");
+      window.alert("Workspace נוצר בהצלחה");
+    } catch (error) {
+      console.error(error);
+      window.alert("שגיאה ביצירת Workspace. בדוק Rules/Indexes.");
+    }
   }
 
   return (
@@ -158,7 +159,12 @@ export default function WorkspacesPage() {
                     workspaceId: ws.id,
                     title,
                     sortOrder: nextSort,
-                  }).catch(console.error);
+                  })
+                    .then(() => window.alert("Board נוצר בהצלחה"))
+                    .catch((error) => {
+                      console.error(error);
+                      window.alert("שגיאה ביצירת Board. בדוק Rules/Indexes.");
+                    });
                 }}
                 className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
