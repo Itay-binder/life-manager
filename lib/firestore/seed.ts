@@ -1,10 +1,13 @@
 import {
   doc,
   getDoc,
+  getDocs,
   setDoc,
   writeBatch,
   serverTimestamp,
   collection,
+  query,
+  where,
 } from "firebase/firestore";
 import { getDb } from "@/lib/firebase/client";
 import type { User } from "firebase/auth";
@@ -13,6 +16,41 @@ import { DEFAULT_WORKSPACE_NAMES } from "@/lib/domains/defaults";
 const usersCol = "users";
 const workspacesCol = "workspaces";
 const boardsCol = "boards";
+
+async function ensureDefaultWorkspaces(user: User): Promise<void> {
+  const db = getDb();
+  const existingSnap = await getDocs(
+    query(
+      collection(db, workspacesCol),
+      where("userId", "==", user.uid),
+      where("parentId", "==", null),
+    ),
+  );
+  const existingNames = new Set(
+    existingSnap.docs.map((d) => String(d.data().name ?? "").trim()),
+  );
+  const missing = DEFAULT_WORKSPACE_NAMES.filter((name) => !existingNames.has(name));
+  if (missing.length === 0) return;
+
+  const batch = writeBatch(db);
+  let maxOrder = -1;
+  for (const d of existingSnap.docs) {
+    const value = d.data().sortOrder;
+    if (typeof value === "number") maxOrder = Math.max(maxOrder, value);
+  }
+
+  missing.forEach((name, index) => {
+    const workspaceRef = doc(collection(db, workspacesCol));
+    batch.set(workspaceRef, {
+      userId: user.uid,
+      name,
+      parentId: null,
+      sortOrder: maxOrder + index + 1,
+      createdAt: serverTimestamp(),
+    });
+  });
+  await batch.commit();
+}
 
 export async function seedUserIfNeeded(user: User): Promise<void> {
   const db = getDb();
@@ -30,7 +68,10 @@ export async function seedUserIfNeeded(user: User): Promise<void> {
 
   const after = await getDoc(userRef);
   const data = after.data() as { workspacesSeeded?: boolean } | undefined;
-  if (data?.workspacesSeeded) return;
+  if (data?.workspacesSeeded) {
+    await ensureDefaultWorkspaces(user);
+    return;
+  }
 
   const batch = writeBatch(db);
   DEFAULT_WORKSPACE_NAMES.forEach((name, index) => {
@@ -64,4 +105,5 @@ export async function seedUserIfNeeded(user: User): Promise<void> {
     { merge: true },
   );
   await batch.commit();
+  await ensureDefaultWorkspaces(user);
 }

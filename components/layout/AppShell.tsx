@@ -17,6 +17,7 @@ import { getFirebaseAuth } from "@/lib/firebase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getDb } from "@/lib/firebase/client";
 import type { BoardPrivacy } from "@/lib/firestore/types";
+import { DEFAULT_WORKSPACE_NAMES } from "@/lib/domains/defaults";
 import {
   createBoard,
   deleteBoard,
@@ -50,6 +51,10 @@ type WorkspaceTreeNode = WorkspaceRow & {
   boards: BoardRow[];
   children: WorkspaceTreeNode[];
 };
+
+const DEFAULT_WORKSPACE_ORDER: Map<string, number> = new Map(
+  DEFAULT_WORKSPACE_NAMES.map((name, index) => [name, index]),
+);
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -137,7 +142,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ): WorkspaceTreeNode[] => {
       const rows = children.get(parentId) ?? [];
       return rows
-        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .sort((a, b) => {
+          if (parentId === null) {
+            const ai = DEFAULT_WORKSPACE_ORDER.get(a.name);
+            const bi = DEFAULT_WORKSPACE_ORDER.get(b.name);
+            if (ai != null && bi != null) return ai - bi;
+            if (ai != null) return -1;
+            if (bi != null) return 1;
+          }
+          return a.sortOrder - b.sortOrder;
+        })
         .map((ws) => ({
           ...ws,
           depth,
@@ -180,9 +194,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="mt-2">
         <div
-          className="rounded-lg px-2 py-1 text-sm font-semibold text-slate-700"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700"
           style={{ paddingInlineStart: `${8 + node.depth * 12}px` }}
         >
+          <span className="text-base leading-none">📁</span>
           {node.name}
         </div>
         <div className="mt-1 space-y-1">
@@ -204,7 +219,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     : "text-slate-700 hover:bg-slate-100"
                 }`}
               >
-                {board.title}
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="text-xs">▦</span>
+                  {board.title}
+                </span>
               </Link>
               <button
                 type="button"
@@ -224,6 +242,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           + Board חדש
         </button>
+        {node.boards.length === 0 ? (
+          <div
+            className="mt-1 text-xs text-slate-400"
+            style={{ marginInlineStart: `${24 + node.depth * 12}px` }}
+          >
+            אין Boards כרגע
+          </div>
+        ) : null}
         {node.children.map((child) => (
           <WorkspaceTree key={child.id} node={child} />
         ))}
