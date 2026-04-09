@@ -1,5 +1,5 @@
-/** תחומי ברירת מחדל בעברית — נזרעים בכניסה ראשונה */
-export const DEFAULT_DOMAIN_NAMES = [
+/** Workspaces ברירת מחדל בעברית — נזרעים בכניסה ראשונה */
+export const DEFAULT_WORKSPACE_NAMES = [
   "משפחה",
   "זוגיות",
   "מערכות יחסים",

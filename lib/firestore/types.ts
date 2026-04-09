@@ -1,10 +1,11 @@
 import type { Timestamp } from "firebase/firestore";
 
-export type ItemKind = "task" | "habit";
+export type BoardPrivacy = "private" | "workspace" | "public";
 
-export type DomainDoc = {
+export type WorkspaceDoc = {
   userId: string;
   name: string;
+  parentId?: string | null;
   sortOrder: number;
   createdAt: Timestamp;
 };
@@ -12,24 +13,46 @@ export type DomainDoc = {
 export type UserProfileDoc = {
   email: string | null;
   displayName: string | null;
-  domainsSeeded: boolean;
+  workspacesSeeded?: boolean;
+  createdAt: Timestamp;
+};
+
+export type BoardDoc = {
+  userId: string;
+  workspaceId: string;
+  title: string;
+  privacy: BoardPrivacy;
+  sortOrder: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};
+
+export type GroupDoc = {
+  userId: string;
+  boardId: string;
+  title: string;
+  sortOrder: number;
+  createdAt: Timestamp;
+};
+
+export type ColumnDoc = {
+  userId: string;
+  boardId: string;
+  key: string;
+  title: string;
+  type: "text" | "status" | "date" | "number";
+  sortOrder: number;
   createdAt: Timestamp;
 };
 
 export type ItemDoc = {
   userId: string;
-  domainId: string;
-  kind: ItemKind;
+  boardId: string;
+  groupId: string;
   title: string;
-  /** דקות — אופציונלי */
+  status?: string | null;
+  dueDate?: string | null;
   estimateMinutes?: number | null;
-  status: "open" | "done";
   createdAt: Timestamp;
   updatedAt: Timestamp;
-  /** למשימות חד-פעמיות */
-  completedAt?: Timestamp | null;
-  /** למסלול הרגלים — YYYY-MM-DD בזמן מקומי של המשתמש */
-  lastCompletedDate?: string | null;
-  streakCurrent?: number;
-  streakBest?: number;
 };
