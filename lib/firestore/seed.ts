@@ -45,6 +45,7 @@ async function ensureDefaultWorkspaces(user: User): Promise<void> {
       userId: user.uid,
       name,
       parentId: null,
+      color: "slate",
       sortOrder: maxOrder + index + 1,
       createdAt: serverTimestamp(),
     });
@@ -81,6 +82,7 @@ export async function seedUserIfNeeded(user: User): Promise<void> {
       userId: user.uid,
       name,
       parentId: null,
+      color: "slate",
       sortOrder: index,
       createdAt: serverTimestamp(),
     });

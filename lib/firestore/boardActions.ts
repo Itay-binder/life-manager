@@ -14,11 +14,13 @@ export async function createWorkspace(params: {
   name: string;
   parentId?: string | null;
   sortOrder: number;
+  color?: string;
 }) {
   await addDoc(collection(getDb(), "workspaces"), {
     userId: params.userId,
     name: params.name.trim(),
     parentId: params.parentId ?? null,
+    color: params.color ?? "slate",
     sortOrder: params.sortOrder,
     createdAt: serverTimestamp(),
   });
@@ -145,4 +147,29 @@ export async function createColumn(params: {
 
 export async function deleteBoard(boardId: string) {
   await deleteDoc(doc(getDb(), "boards", boardId));
+}
+
+export async function renameWorkspace(workspaceId: string, name: string) {
+  await updateDoc(doc(getDb(), "workspaces", workspaceId), {
+    name: name.trim(),
+  });
+}
+
+export async function recolorWorkspace(workspaceId: string, color: string) {
+  await updateDoc(doc(getDb(), "workspaces", workspaceId), {
+    color,
+  });
+}
+
+export async function moveWorkspace(
+  workspaceId: string,
+  parentId: string | null,
+) {
+  await updateDoc(doc(getDb(), "workspaces", workspaceId), {
+    parentId,
+  });
+}
+
+export async function deleteWorkspace(workspaceId: string) {
+  await deleteDoc(doc(getDb(), "workspaces", workspaceId));
 }
