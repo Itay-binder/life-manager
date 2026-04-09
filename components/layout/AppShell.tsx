@@ -59,10 +59,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [workspaces, setWorkspaces] = useState<WorkspaceRow[]>([]);
   const [boards, setBoards] = useState<BoardRow[]>([]);
   const [menuBoardId, setMenuBoardId] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(320);
+  const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
     setEditingName(user?.displayName ?? "");
   }, [user]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const onMove = (event: MouseEvent) => {
+      const next = window.innerWidth - event.clientX;
+      const clamped = Math.max(260, Math.min(520, next));
+      setSidebarWidth(clamped);
+    };
+    const onUp = () => setIsResizing(false);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [isResizing]);
 
   useEffect(() => {
     if (!user) return;
@@ -214,7 +233,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-0 flex-1 bg-zinc-50">
-      <aside className="sticky top-0 h-screen w-72 border-l border-zinc-200 bg-white p-3">
+      {!sidebarCollapsed ? (
+        <button
+          type="button"
+          onClick={() => setSidebarCollapsed(true)}
+          className="fixed right-2 top-2 z-20 rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 shadow-sm hover:bg-zinc-50"
+          title="מזער תפריט"
+        >
+          הסתר תפריט
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setSidebarCollapsed(false)}
+          className="fixed right-2 top-2 z-20 rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 shadow-sm hover:bg-zinc-50"
+          title="פתח תפריט"
+        >
+          פתח תפריט
+        </button>
+      )}
+      <aside
+        className={`sticky top-0 h-screen border-l border-zinc-200 bg-white p-3 transition-[width,padding] duration-200 ${
+          sidebarCollapsed ? "w-0 overflow-hidden p-0" : ""
+        }`}
+        style={sidebarCollapsed ? undefined : { width: `${sidebarWidth}px` }}
+      >
         <div className="mb-3 flex items-center justify-between">
           <p className="text-sm font-semibold text-zinc-900">Life Manager</p>
           <button
@@ -280,6 +323,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           ))}
         </div>
       </aside>
+      {!sidebarCollapsed ? (
+        <button
+          type="button"
+          onMouseDown={() => setIsResizing(true)}
+          className="relative z-10 h-screen w-1 cursor-col-resize bg-transparent hover:bg-zinc-300"
+          title="גרור לשינוי רוחב"
+        />
+      ) : null}
       <main className="min-h-screen flex-1 p-6">{children}</main>
 
       {menuBoardId ? (
